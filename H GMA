@@ -1,0 +1,1582 @@
+#include <iostream>
+
+#include <ctime>
+
+#include <cstdlib>
+
+#include <windows.h>
+
+using namespace std;
+
+
+struct Paese {
+
+    string nome;
+
+    int vita=100;
+
+    int territorio=5;
+
+    int soldati=20;
+
+    int strutture=1;
+
+    int soldi=1000;
+
+    int forzanavale=100;
+
+    int morale=100;
+
+    int tasse=10;
+
+};
+
+
+void inizio(Paese &nostro, Paese &nemico);
+
+void Terrestre(Paese &nostro, Paese &nemico);
+
+void Aereo(Paese &nostro, Paese &nemico);
+
+void Navale(Paese &nostro, Paese &nemico);
+
+void MiglioraTruppe(Paese &nostro, Paese &nemico);
+
+void TurnoNemico(Paese &nostro, Paese &nemico);
+
+void AttaccoTerrestreNemico(Paese &nostro, Paese &nemico);
+
+void AttaccoNavaleNemico(Paese &nostro, Paese &nemico);
+
+void AttaccoAereoNemico(Paese &nostro, Paese &nemico);
+
+void MiglioraNemico(Paese &nostro, Paese &nemico);
+
+
+int main()
+
+{
+
+    cout<<"-------------------------- War Simulator --------------------------"<<endl;
+
+    srand(time(NULL));
+
+    Paese nostro;
+
+    Paese nemico;
+
+    int random, scelta, sceltaattacco, optasse, costotassa;
+
+    bool turnoNemicoAttivo = true;
+
+    
+
+    inizio(nostro, nemico);
+
+    system("PAUSE");
+
+    system("cls");
+
+    
+
+    do
+
+    {
+
+        cout<<"1- ATTACCO "<<endl;
+
+        cout<<"2- RECLUTA TRUPPE (prezzo ---> 200)"<<endl;
+
+        cout<<"3- MIGLIORA TRUPPE"<<endl;
+
+        cout<<"4- MIGLIORA STRUTTURE (prezzo ---> 300)"<<endl;
+
+        cout<<"5- GESTISCI TASSE "<<endl;
+
+        cout<<"6- EXIT "<<endl;
+
+        cout<<" ---> ";
+
+        cin>>scelta;
+
+        cout<<endl;
+
+        
+
+        switch (scelta)
+
+        {
+
+            case 1:
+
+                cout<<"Hai dichiarato guerra all "<<nemico.nome<<endl;
+
+                Sleep (250);
+
+                cout<<"Scegli l' attacco che vuoi fare ---> "<<endl;
+
+                cout<<"1-ATTACCO SU TERRA "<<endl;
+
+                cout<<"2-ATTACCO AEREO "<<endl;
+
+                cout<<"3-ATTACCO NAVALE "<<endl;
+
+                cout<<"4-FERMA ATTACCO "<<endl;
+
+                cout<<"---> ";
+
+                cin>>sceltaattacco;
+
+                
+
+                switch(sceltaattacco)
+
+                {
+
+                    case 1:
+
+                        Terrestre(nostro, nemico);
+
+                        break;
+
+                    case 2:
+
+                        Aereo(nostro, nemico);
+
+                        break;
+
+                    case 3:
+
+                        Navale(nostro, nemico);
+
+                        break;
+
+                    case 4:
+
+                        cout<<"Hai fermato l attacco"<<endl;
+
+                        break;
+
+                    default:
+
+                        cout<<"l opzione non \212 presente"<<endl;
+
+                        break;
+
+                }
+
+                break;
+
+                
+
+            case 2:
+
+                cout<<endl;
+
+                if(nostro.soldi>=200)
+
+                {
+
+                    cout<<"Hai Reclutato nuovi soldati!"<<endl;
+
+                    nostro.soldati=nostro.soldati+10;
+
+                    nostro.soldi=nostro.soldi-200;
+
+                }
+
+                else if(nostro.soldi<200)
+
+                {
+
+                    cout<<"Non hai abbastanza soldi!"<<endl;
+
+                }
+
+                cout<<endl;
+
+                break;
+
+                
+
+            case 3:
+
+                {
+
+                    MiglioraTruppe(nostro, nemico);
+
+                }
+
+                break;
+
+                
+
+            case 4:
+
+                cout<<endl;
+
+                if(nostro.soldi>=300)
+
+                {
+
+                    cout<<"Le strutture sono aumentate di livello!"<<endl;
+
+                    nostro.strutture=nostro.strutture+1;
+
+                    nostro.soldi=nostro.soldi-300;
+
+                }
+
+                else
+
+                {
+
+                    cout<<"Mi dispiace! Non hai abbastanza soldi"<<endl;
+
+                }
+
+                cout<<endl;
+
+                break;
+
+                
+
+            case 5:
+
+                cout<<endl;
+
+                cout<<"Vuoi aumentare le tasse (1) o diminuirle (2)"<<endl;
+
+                cin>>optasse;
+
+                if(optasse==1)
+
+                {
+
+                    cout<<"scegli a quanto ammonta la nuova tassa "<<endl;
+
+                    cin>>costotassa;
+
+                    nostro.tasse = costotassa;
+
+                    if(costotassa>50)
+
+                    {
+
+                        nostro.morale=nostro.morale-30;
+
+                    }
+
+                    else
+
+                    {
+
+                        nostro.morale=nostro.morale-10;
+
+                    }
+
+                }
+
+                else if(optasse==2)
+
+                {
+
+                    cout<<"scegli a quanto ammonta la nuova tassa "<<endl;
+
+                    cin>>costotassa;
+
+                    nostro.tasse = costotassa;
+
+                    if(costotassa<5)
+
+                    {
+
+                        nostro.morale=nostro.morale+20;
+
+                    }
+
+                    else
+
+                    {
+
+                        nostro.morale=nostro.morale+10;
+
+                    }
+
+                }
+
+                cout<<endl;
+
+                break;
+
+                
+
+            case 6:
+
+                cout<<endl;
+
+                cout<<"Grazie per aver giocato al nostro gioco "<<endl;
+
+                cout<<endl;
+
+                break;
+
+                
+
+            default:
+
+                cout<<endl;
+
+                cout<<"l opzione non esiste! "<<endl;
+
+                cout<<endl;
+
+                break;
+
+        }
+
+        
+
+        // Aggiungiamo il turno del nemico dopo ogni mossa del giocatore (tranne che per l'uscita)
+
+        if(scelta != 6 && turnoNemicoAttivo && nemico.vita > 0)
+
+        {
+
+            system("PAUSE");
+
+            system("cls");
+
+            cout << "--------------------------------------------------" << endl;
+
+            cout << "TURNO DEL NEMICO" << endl;
+
+            cout << "--------------------------------------------------" << endl;
+
+            Sleep(1000);
+
+            
+
+            TurnoNemico(nostro, nemico);
+
+            
+
+            // Incremento automatico dei soldi per il nemico
+
+            nemico.soldi += 200 + (nemico.territorio * 50) + (nemico.tasse * 5);
+
+            
+
+            // Incremento automatico dei soldi per il giocatore
+
+            nostro.soldi += 200 + (nostro.territorio * 50) + (nostro.tasse * 5);
+
+        }
+
+        
+
+        system("PAUSE");
+
+        system("cls");
+
+        
+
+        // Verificare se qualcuno ha vinto
+
+        if(nostro.vita <= 0)
+
+        {
+
+            cout << "===================================================" << endl;
+
+            cout << "IL TUO PAESE \212 STATO CONQUISTATO!" << endl;
+
+            cout << nemico.nome << " HA VINTO LA GUERRA!" << endl;
+
+            cout << "===================================================" << endl;
+
+            system("PAUSE");
+
+            break;
+
+        }
+
+        else if(nemico.vita <= 0)
+
+        {
+
+            cout << "===================================================" << endl;
+
+            cout << "HAI CONQUISTATO " << nemico.nome << "!" << endl;
+
+            cout << "HAI VINTO LA GUERRA!" << endl;
+
+            cout << "===================================================" << endl;
+
+            system("PAUSE");
+
+            break;
+
+        }
+
+        
+
+        // Mostra informazioni aggiornate
+
+        cout<<nostro.nome<<endl;
+
+        cout<<"Vita ---> "<<nostro.vita<<endl;
+
+        cout<<"Soldati ---> "<<nostro.soldati<<endl;
+
+        cout<<"Strutture ---> LV"<<nostro.strutture<<endl;
+
+        cout<<"Soldi ---> "<<nostro.soldi<<endl;
+
+        cout<<"Forza Navale ---> "<<nostro.forzanavale<<endl;
+
+        cout<<"Territori ---> "<<nostro.territorio<<endl;
+
+        cout<<"Morale ---> "<<nostro.morale<<endl;
+
+        cout<<"Tasse ---> "<<nostro.tasse<<"%"<<endl;
+
+        cout << "--------------------------------------------------" << endl;
+
+        
+
+        cout<<nemico.nome << endl;
+
+        cout<<"Vita ---> " << nemico.vita << endl;
+
+        cout<<"Soldati ---> " << nemico.soldati << endl;
+
+        cout<<"Strutture ---> LV" << nemico.strutture << endl;
+
+        cout<<"Soldi ---> "<<nemico.soldi<<endl;
+
+        cout<<"Forza Navale ---> "<<nemico.forzanavale<<endl;
+
+        cout<<"Territori ---> "<<nemico.territorio<<endl;
+
+        cout<<"Morale ---> "<<nemico.morale<<endl;
+
+        cout<<"Tasse ---> "<<nemico.tasse<<"%"<<endl;
+
+        
+
+        system("PAUSE");
+
+        system("cls");
+
+    } while(scelta!=6 && nostro.vita > 0 && nemico.vita > 0);
+
+    
+
+    return 0;
+
+}
+
+
+void inizio(Paese &nostro, Paese &nemico)
+
+{
+
+    cout << "Inserisci il nome del tuo paese: ";
+
+    cin >> nostro.nome;
+
+    cout << "Inserisci il nome del paese nemico: ";
+
+    cin >> nemico.nome;
+
+    
+
+    // Inizializzazione del nemico con valori leggermente diversi
+
+    nemico.vita = 100;
+
+    nemico.territorio = 5;
+
+    nemico.soldati = 25;  // Leggermente più forte
+
+    nemico.strutture = 1;
+
+    nemico.soldi = 1000;
+
+    nemico.forzanavale = 120;  // Leggermente più forte
+
+    nemico.morale = 100;
+
+    nemico.tasse = 15;  // Tasse più alte
+
+    
+
+    system("cls");
+
+    cout<<nostro.nome<<endl;
+
+    cout<<"Vita ---> "<<nostro.vita<<endl;
+
+    cout<<"Forza navale ---> "<<nostro.forzanavale<<endl;
+
+    cout<<"Regioni ---> "<<nostro.territorio<<endl;
+
+    cout<<"Soldati ---> "<<nostro.soldati<<endl;
+
+    cout<<"Strutture ---> LV"<<nostro.strutture<<endl;
+
+    cout<<"Soldi ---> "<<nostro.soldi<<endl;
+
+    cout<<"Morale ---> "<<nostro.morale<<endl;
+
+    cout<<"Tasse ---> "<<nostro.tasse<<"%"<<endl;
+
+    cout << "--------------------------------------------------" << endl;
+
+    cout<<nemico.nome<<endl;
+
+    cout<<"Vita ---> "<<nemico.vita<<endl;
+
+    cout<<"Forza navale ---> "<<nemico.forzanavale<<endl;
+
+    cout<<"Regioni ---> "<<nemico.territorio<<endl;
+
+    cout<<"Soldati ---> "<<nemico.soldati << endl;
+
+    cout<<"Strutture ---> LV" <<nemico.strutture << endl;
+
+    cout<<"Soldi ---> "<<nemico.soldi<<endl;
+
+    cout<<"Morale ---> "<<nemico.morale<<endl;
+
+    cout<<"Tasse ---> "<<nemico.tasse<<"%"<<endl;
+
+}
+
+
+void Navale(Paese &nostro, Paese &nemico)
+
+{
+
+    int scelta2;
+
+    cout<<"la tua forza navale \212 ---> "<<nostro.forzanavale<<endl;
+
+    cout<<endl;
+
+    Sleep (500);
+
+    cout<<"la forza navale del nemico \212 ---> "<<nemico.forzanavale<<endl;
+
+    cout<<endl;
+
+    
+
+    Sleep(2000);
+
+    cout<<"le tue navi sono sbarcate nell oceano "<<endl;
+
+    Sleep(2000);
+
+    cout<<"Hanno iniziato a causare danni nel territorio nemico"<<endl;
+
+    Sleep(2000);
+
+    if(nostro.forzanavale>nemico.forzanavale)
+
+    {
+
+        cout<<"La tua flotta navale ha mostrato la sua supremazia a confronto di quella del nemico"<<endl;
+
+        Sleep(2000);
+
+        cout<<"Hai Sconfitto la flotta navale del nemico "<<endl;
+
+        Sleep(2000);
+
+        nemico.forzanavale=nemico.forzanavale-60;
+
+        if(nemico.forzanavale < 0) nemico.forzanavale = 0;
+
+        cout<<"La forza navale del nemico \212 "<<nemico.forzanavale<<endl;
+
+        Sleep(2000);
+
+        system("PAUSE");
+
+        system("cls");
+
+        cout<<"Le tue navi hanno danneggiato molto il loro territorio "<<endl;
+
+        Sleep(2000);
+
+        cout<<"Congratulazioni! Hai conquistato un territorio nemico"<<endl;
+
+        nemico.territorio--;
+
+        if(nemico.territorio < 0) nemico.territorio = 0;
+
+        nostro.territorio++;
+
+        nostro.morale=nostro.morale+50;
+
+        if(nostro.morale > 100) nostro.morale = 100;
+
+        nemico.vita -= 15;
+
+        if(nemico.vita < 0) nemico.vita = 0;
+
+        Sleep(1000);
+
+        cout<<"La morale del tuo popolo \212 aumentata"<<endl;
+
+    }
+
+    else
+
+    {
+
+        cout<<"La tua flotta navale ha subito danni gravi... "<<endl;
+
+        nostro.morale=nostro.morale-30;
+
+        if(nostro.morale < 0) nostro.morale = 0;
+
+        Sleep(1000);
+
+        cout<<"La morale del tuo popolo \212 diminuita"<<endl;
+
+        system("PAUSE");
+
+        system("cls");
+
+        cout<<"SCEGLI..."<<endl;
+
+        cout<<"1. Ritirata"<<endl;
+
+        cout<<"2.continua attacco"<<endl;
+
+        cin>>scelta2;
+
+        if(scelta2==1)
+
+        {
+
+            nostro.forzanavale=nostro.forzanavale-60;
+
+            if(nostro.forzanavale < 0) nostro.forzanavale = 0;
+
+            Sleep(1000);
+
+            cout<<"Hai subito gravi danni... "<<endl;
+
+            Sleep(1000);
+
+            cout<<"...Ma era l opzione migliore "<<endl;
+
+            Sleep(1000);
+
+        }
+
+        else if(scelta2==2)
+
+        {
+
+            cout<<"Hai deciso di continuare con l attacco..."<<endl;
+
+            Sleep(1000);
+
+            cout<<"Una decisione coraggiosa ma sicuramene non intelligente..."<<endl;
+
+            Sleep(1000);
+
+            cout<<"La tua flotta navale \212 andata distrutta"<<endl;
+
+            nostro.forzanavale=0;
+
+            nostro.morale=nostro.morale-50;
+
+            if(nostro.morale < 0) nostro.morale = 0;
+
+            Sleep(1000);
+
+            cout<<"La morale del tuo popolo \212 calata troppo "<<endl;
+
+        }
+
+    }
+
+    system("PAUSE");
+
+    system("cls");
+
+}
+
+
+void Terrestre(Paese &nostro, Paese &nemico)
+
+{
+
+    int scelta2;
+
+    cout<<"i tuoi soldati sono ---> "<<nostro.soldati<<endl;
+
+    cout<<endl;
+
+    Sleep (500);
+
+    cout<<"i soldati del nemico sono ---> "<<nemico.soldati<<endl;
+
+    cout<<endl;
+
+    Sleep(2000);
+
+    cout<<"i tuoi soldati sono sbarcati nel territorio nemico "<<endl;
+
+    Sleep(2000);
+
+    cout<<"Hanno iniziato a causare danni nel territorio nemico"<<endl;
+
+    Sleep(2000);
+
+    if(nostro.soldati>nemico.soldati)
+
+    {
+
+        cout<<"I tuoi soldati hanno mostrato la loro supremazia in confronto a quelli del nemico"<<endl;
+
+        Sleep(2000);
+
+        cout<<"Hai Sconfitto l'esercito del nemico "<<endl;
+
+        Sleep(2000);
+
+        nemico.soldati=nemico.soldati-15;
+
+        if(nemico.soldati < 0) nemico.soldati = 0;
+
+        cout<<"I soldati del nemico sono "<<nemico.soldati<<endl;
+
+        Sleep(2000);
+
+        system("PAUSE");
+
+        system("cls");
+
+        cout<<"I tuoi soldati hanno iniziato ad occupare il loro territorio "<<endl;
+
+        Sleep(2000);
+
+        nemico.territorio=nemico.territorio-1;
+
+        if(nemico.territorio < 0) nemico.territorio = 0;
+
+        nostro.territorio=nostro.territorio+1;
+
+        nostro.soldati=nostro.soldati-5;
+
+        if(nostro.soldati < 0) nostro.soldati = 0;
+
+        nemico.vita -= 10;
+
+        if(nemico.vita < 0) nemico.vita = 0;
+
+        Sleep(2000);
+
+        cout<<"Congratulazioni! Hai preso un territorio al nemico"<<endl;
+
+        nostro.morale=nostro.morale+30;
+
+        if(nostro.morale > 100) nostro.morale = 100;
+
+        Sleep(1000);
+
+        cout<<"La morale del tuo popolo \212 aumentata "<<endl;
+
+    }
+
+    else
+
+    {
+
+        cout<<"Il tuo esercito ha subito danni gravi... "<<endl;
+
+        nostro.morale=nostro.morale-20;
+
+        if(nostro.morale < 0) nostro.morale = 0;
+
+        Sleep(1000);
+
+        cout<<"La morale del tuo popolo \212 calata "<<endl;
+
+        system("PAUSE");
+
+        system("cls");
+
+        cout<<"SCEGLI..."<<endl;
+
+        cout<<"1. Ritirata"<<endl;
+
+        cout<<"2. Continua attacco"<<endl;
+
+        cin>>scelta2;
+
+        if(scelta2==1)
+
+        {
+
+            nostro.soldati=nostro.soldati-15;
+
+            if(nostro.soldati < 0) nostro.soldati = 0;
+
+            Sleep(1000);
+
+            cout<<"Hai subito gravi danni... "<<endl;
+
+            Sleep(1000);
+
+            cout<<"...Ma era l opzione migliore "<<endl;
+
+            Sleep(1000);
+
+        }
+
+        else if(scelta2==2)
+
+        {
+
+            cout<<"Hai deciso di continuare con l attacco..."<<endl;
+
+            Sleep(1000);
+
+            cout<<"Una decisione coraggiosa ma non intelligente..."<<endl;
+
+            Sleep(1000);
+
+            cout<<"Il tuo esercito \212 andato distrutto"<<endl;
+
+            nostro.soldati=0;
+
+            nostro.morale=nostro.morale-50;
+
+            if(nostro.morale < 0) nostro.morale = 0;
+
+            Sleep(1000);
+
+            cout<<"La morale del tuo popolo \212 calata troppo"<<endl;
+
+        }
+
+    }
+
+    system("PAUSE");
+
+    system("cls");
+
+}
+
+
+void Aereo(Paese &nostro, Paese &nemico)
+
+{
+
+    int scelta2, random;
+
+    cout<<"Stai preparando l'attacco aereo..."<<endl;
+
+    Sleep(1000);
+
+    cout<<"Questo tipo di attacco pu\242 essere molto efficace ma costoso"<<endl;
+
+    cout<<endl;
+
+    Sleep(1000);
+
+    cout<<"Vuoi procedere con l'attacco? (costo: 500 soldi)"<<endl;
+
+    cout<<"1. Si"<<endl;
+
+    cout<<"2. No"<<endl;
+
+    
+
+    cin>>scelta2;
+
+    if(scelta2==1 && nostro.soldi>=500)
+
+    {
+
+        nostro.soldi=nostro.soldi-500;
+
+        cout<<"Attacco aereo in corso..."<<endl;
+
+        Sleep(2000);
+
+        cout<<"I bombardieri stanno raggiungendo il territorio nemico"<<endl;
+
+        Sleep(2000);
+
+        nostro.morale=nostro.morale+20;
+
+        if(nostro.morale > 100) nostro.morale = 100;
+
+        Sleep(1000);
+
+        cout<<"La morale del tuo popolo \212 aumentata "<<endl;
+
+        random=rand()%2;
+
+        if(random==0)
+
+        {
+
+            cout<<"Attacco aereo riuscito con successo!"<<endl;
+
+            Sleep(1000);
+
+            cout<<"Hai inflitto gravi danni al nemico"<<endl;
+
+            nemico.vita=nemico.vita-30;
+
+            if(nemico.vita < 0) nemico.vita = 0;
+
+            nemico.strutture=nemico.strutture-1;
+
+            if(nemico.strutture<0)
+
+            {
+
+                nemico.strutture=0;
+
+            }
+
+            Sleep(1000);
+
+            cout<<"La vita del nemico \212 scesa a "<<nemico.vita<<endl;
+
+            cout<<"Le strutture del nemico sono scese a LV"<<nemico.strutture<<endl;
+
+            nostro.morale=nostro.morale+20;
+
+            if(nostro.morale > 100) nostro.morale = 100;
+
+            Sleep(1000);
+
+            cout<<"La morale del tuo popolo \212 aumentata di piu "<<endl;
+
+        }
+
+        else
+
+        {
+
+            cout<<"Il nemico ha intercettato i tuoi aerei!"<<endl;
+
+            Sleep(1000);
+
+            cout<<"L'attacco ha avuto un effetto ridotto"<<endl;
+
+            nemico.vita=nemico.vita-10;
+
+            if(nemico.vita < 0) nemico.vita = 0;
+
+            Sleep(1000);
+
+            cout<<"La vita del nemico \212 scesa a "<<nemico.vita<<endl;
+
+        }
+
+    }
+
+    else if(scelta2==1 && nostro.soldi<500)
+
+    {
+
+        cout<<"Non hai abbastanza soldi per lanciare un attacco aereo!"<<endl;
+
+        Sleep(1000);
+
+        nostro.morale=nostro.morale-10;
+
+        if(nostro.morale < 0) nostro.morale = 0;
+
+        Sleep(1000);
+
+        cout<<"La morale del tuo popolo \212 calata "<<endl;
+
+    }
+
+    else
+
+    {
+
+        cout<<"Hai annullato l'attacco aereo"<<endl;
+
+        Sleep(1000);
+
+    }
+
+    system("PAUSE");
+
+    system("cls");
+
+}
+
+
+void MiglioraTruppe(Paese &nostro, Paese &nemico)
+
+{
+
+    int scelta;
+
+    cout<<"--------------------------------"<<endl;
+
+    cout<<"MIGLIORAMENTO TRUPPE"<<endl;
+
+    cout<<"--------------------------------"<<endl;
+
+    Sleep(500);
+
+    cout<<"Scegli quale forza militare vuoi migliorare: "<<endl;
+
+    cout<<"1. Forza Terrestre (costo: 400 soldi)"<<endl;
+
+    cout<<"2. Forza Navale (costo: 600 soldi)"<<endl;
+
+    cout<<"3. Forza Aerea (costo: 800 soldi)"<<endl;
+
+    cout<<"4. Torna indietro"<<endl;
+
+    cout<<"---> ";
+
+    cin>>scelta;
+
+    cout<<endl;
+
+    switch(scelta)
+
+    {
+
+        case 1:
+
+            if(nostro.soldi >= 400)
+
+            {
+
+                cout<<"Stai migliorando le tue truppe terrestri..."<<endl;
+
+                Sleep(1500);
+
+                nostro.soldati = nostro.soldati + 15;
+
+                nostro.vita = nostro.vita + 5;
+
+                if(nostro.vita > 100) nostro.vita = 100;
+
+                nostro.soldi = nostro.soldi - 400;
+
+                cout<<"Miglioramento completato!"<<endl;
+
+                Sleep(1000);
+
+                cout<<"Nuova forza terrestre: "<<nostro.soldati<<" soldati"<<endl;
+
+                cout<<"La vita delle tue truppe \212 aumentata a: "<<nostro.vita<<endl;
+
+            }
+
+            else
+
+            {
+
+                cout<<"Non hai abbastanza soldi per questo miglioramento!"<<endl;
+
+                cout<<"Soldi disponibili: "<<nostro.soldi<<endl;
+
+                cout<<"Soldi necessari: 400"<<endl;
+
+            }
+
+            break;
+
+        case 2:
+
+            if(nostro.soldi >= 600)
+
+            {
+
+                cout<<"Stai migliorando la tua flotta navale..."<<endl;
+
+                Sleep(1500);
+
+                nostro.forzanavale = nostro.forzanavale + 50;
+
+                nostro.soldi = nostro.soldi - 600;
+
+                cout<<"Miglioramento completato!"<<endl;
+
+                Sleep(1000);
+
+                cout<<"Nuova forza navale: "<<nostro.forzanavale<<endl;
+
+            }
+
+            else
+
+            {
+
+                cout<<"Non hai abbastanza soldi per questo miglioramento!"<<endl;
+
+                cout<<"Soldi disponibili: "<<nostro.soldi<<endl;
+
+                cout<<"Soldi necessari: 600"<<endl;
+
+            }
+
+            break;
+
+        case 3:
+
+            if(nostro.soldi >= 800)
+
+            {
+
+                int random = rand()%3;
+
+                cout<<"Stai migliorando la tua forza aerea..."<<endl;
+
+                Sleep(1500);
+
+                nostro.soldi = nostro.soldi - 800;
+
+                if(random == 0)
+
+                {
+
+                    cout<<"Miglioramento eccellente!"<<endl;
+
+                    Sleep(1000);
+
+                    nostro.vita = nostro.vita + 15;
+
+                    if(nostro.vita > 100) nostro.vita = 100;
+
+                    cout<<"La tua difesa aerea ha aumentato la vita del paese a: "<<nostro.vita<<endl;
+
+                }
+
+                else if(random == 1)
+
+                {
+
+                    cout<<"Miglioramento strategico!"<<endl;
+
+                    Sleep(1000);
+
+                    nostro.territorio = nostro.territorio + 1;
+
+                    cout<<"La tua forza aerea ha conquistato un nuovo territorio!"<<endl;
+
+                    cout<<"Territori totali: "<<nostro.territorio<<endl;
+
+                }
+
+                else
+
+                {
+
+                    cout<<"Miglioramento tecnologico!"<<endl;
+
+                    Sleep(1000);
+
+                    nostro.strutture = nostro.strutture + 1;
+
+                    cout<<"La tecnologia aerea ha migliorato le tue strutture a LV"<<nostro.strutture<<endl;
+
+                }
+
+            }
+
+            else
+
+            {
+
+                cout<<"Non hai abbastanza soldi per questo miglioramento!"<<endl;
+
+                cout<<"Soldi disponibili: "<<nostro.soldi<<endl;
+
+                cout<<"Soldi necessari: 800"<<endl;
+
+            }
+
+            break;
+
+        case 4:
+
+            cout<<"Stai tornando al menu principale..."<<endl;
+
+            Sleep(1000);
+
+            break;
+
+        default:
+
+            cout<<"Opzione non valida! Torna al menu principale."<<endl;
+
+            Sleep(1000);
+
+            break;
+
+    }
+
+    system("PAUSE");
+
+    system("cls");
+
+}
+
+
+// NUOVE FUNZIONI PER IL NEMICO
+
+
+void TurnoNemico(Paese &nostro, Paese &nemico)
+
+{
+
+    // Il nemico sceglie un'azione in base alle condizioni attuali
+
+    int scelta;
+
+    
+
+    // Se il nemico ha pochi soldati, cerca di reclutarne di più
+
+    if(nemico.soldati < 10 && nemico.soldi >= 200)
+
+    {
+
+        cout<<nemico.nome<<" sta reclutando nuovi soldati..."<<endl;
+
+        Sleep(1500);
+
+        nemico.soldati += 10;
+
+        nemico.soldi -= 200;
+
+        cout<<nemico.nome<<" ha ora "<<nemico.soldati<<" soldati!"<<endl;
+
+        Sleep(1000);
+
+        return;
+
+    }
+
+    
+
+    // Se il nemico ha poca vita, cerca di migliorare le strutture
+
+    if(nemico.vita < 30 && nemico.soldi >= 300)
+
+    {
+
+        cout<<nemico.nome<<" sta migliorando le sue strutture difensive..."<<endl;
+
+        Sleep(1500);
+
+        nemico.strutture++;
+
+        nemico.vita += 10;
+
+        if(nemico.vita > 100) nemico.vita = 100;
+
+        nemico.soldi -= 300;
+
+        cout<<nemico.nome<<" ha ora strutture di LV"<<nemico.strutture<<"!"<<endl;
+
+        cout<<"La vita di "<<nemico.nome<<" \212 aumentata a "<<nemico.vita<<"!"<<endl;
+
+        Sleep(1000);
+
+        return;
+
+    }
+
+    
+
+    // Il nemico sceglie un'azione casuale con qualche logica
+
+    if(nemico.soldi < 300)
+
+    {
+
+        // Se ha pochi soldi, il nemico risparmia
+
+        cout<<nemico.nome<<" sta riorganizzando la sua economia..."<<endl;
+
+        Sleep(1500);
+
+        nemico.soldi += 200;
+
+        cout<<nemico.nome<<" ha guadagnato dei soldi attraverso le tasse!"<<endl;
+
+        Sleep(1000);
+
+        return;
+
+    }
+
+    
+
+    // Altrimenti scelta casuale tra attacco e miglioramento
+
+    scelta = rand() % 4;
+
+    
+
+    switch(scelta)
+
+    {
+
+        case 0: // Attacco Terrestre
+
+            if(nemico.soldati >= 10)
+
+            {
+
+                AttaccoTerrestreNemico(nostro, nemico);
+
+            }
+
+            else 
+
+            {
+
+                MiglioraNemico(nostro, nemico);
+
+            }
+
+            break;
+
+            
+
+        case 1: // Attacco Navale
+
+            if(nemico.forzanavale >= 50)
+
+            {
+
+                AttaccoNavaleNemico(nostro, nemico);
+
+            }
+
+            else
+
+            {
+
+                MiglioraNemico(nostro, nemico);
+
+            }
+
+            break;
+
+            
+
+        case 2: // Attacco Aereo
+
+            if(nemico.soldi >= 500)
+
+            {
+
+                AttaccoAereoNemico(nostro, nemico);
+
+            }
+
+            else
+
+            {
+
+
+
+
+
+
+MiglioraNemico(nostro, nemico);
+}
+break;
+case 3: // Miglioramento
+MiglioraNemico(nostro, nemico);
+break;
+}
+}
+
+void AttaccoTerrestreNemico(Paese &nostro, Paese &nemico)
+{
+cout<<nemico.nome<<" sta lanciando un attacco terrestre contro di te!"<<endl;
+Sleep(1500);
+cout<<"I soldati nemici stanno invadendo il tuo territorio..."<<endl;
+Sleep(1500);
+
+if(nemico.soldati > nostro.soldati)
+{
+cout<<"L'esercito di "<<nemico.nome<<" si è dimostrato superiore al tuo!"<<endl;
+Sleep(1500);
+nostro.soldati = nostro.soldati - 10;
+if(nostro.soldati < 0) nostro.soldati = 0;
+cout<<"Hai perso 10 soldati! Soldati rimasti: "<<nostro.soldati<<endl;
+Sleep(1500);
+cout<<"Il nemico sta occupando un tuo territorio!"<<endl;
+nostro.territorio = nostro.territorio - 1;
+if(nostro.territorio < 0) nostro.territorio = 0;
+nemico.territorio = nemico.territorio + 1;
+nemico.morale = nemico.morale + 30;
+if(nemico.morale > 100) nemico.morale = 100;
+nostro.morale = nostro.morale - 20;
+if(nostro.morale < 0) nostro.morale = 0;
+nostro.vita -= 10;
+if(nostro.vita < 0) nostro.vita = 0;
+cout<<"Hai perso un territorio! Territori rimasti: "<<nostro.territorio<<endl;
+Sleep(1000);
+cout<<"La morale del tuo popolo è calata a "<<nostro.morale<<endl;
+}
+else
+{
+cout<<"Il tuo esercito ha resistito all'attacco nemico!"<<endl;
+Sleep(1500);
+nemico.soldati = nemico.soldati - 8;
+if(nemico.soldati < 0) nemico.soldati = 0;
+nostro.soldati = nostro.soldati - 3;
+if(nostro.soldati < 0) nostro.soldati = 0;
+cout<<"Il nemico ha perso 8 soldati! I tuoi soldati hanno subito lievi perdite (-3)."<<endl;
+cout<<"Soldati rimasti: "<<nostro.soldati<<endl;
+Sleep(1000);
+nostro.morale = nostro.morale + 10;
+if(nostro.morale > 100) nostro.morale = 100;
+cout<<"La morale del tuo popolo è aumentata a "<<nostro.morale<<endl;
+}
+}
+
+void AttaccoNavaleNemico(Paese &nostro, Paese &nemico)
+{
+cout<<nemico.nome<<" sta lanciando un attacco navale contro di te!"<<endl;
+Sleep(1500);
+cout<<"Le navi nemiche stanno bombardando le tue coste..."<<endl;
+Sleep(1500);
+
+if(nemico.forzanavale > nostro.forzanavale)
+{
+cout<<"La flotta navale di "<<nemico.nome<<" si è dimostrata superiore alla tua!"<<endl;
+Sleep(1500);
+nostro.forzanavale = nostro.forzanavale - 40;
+if(nostro.forzanavale < 0) nostro.forzanavale = 0;
+cout<<"La tua forza navale è scesa a "<<nostro.forzanavale<<"!"<<endl;
+Sleep(1500);
+cout<<"Il nemico sta attaccando un tuo territorio!"<<endl;
+nostro.vita -= 15;
+if(nostro.vita < 0) nostro.vita = 0;
+if(rand() % 2 == 0 && nostro.territorio > 0)
+{
+nostro.territorio = nostro.territorio - 1;
+nemico.territorio = nemico.territorio + 1;
+cout<<"Hai perso un territorio! Territori rimasti: "<<nostro.territorio<<endl;
+}
+nostro.morale = nostro.morale - 30;
+if(nostro.morale < 0) nostro.morale = 0;
+cout<<"La morale del tuo popolo è calata a "<<nostro.morale<<endl;
+}
+else
+{
+cout<<"La tua flotta navale ha resistito all'attacco nemico!"<<endl;
+Sleep(1500);
+nemico.forzanavale = nemico.forzanavale - 30;
+if(nemico.forzanavale < 0) nemico.forzanavale = 0;
+nostro.forzanavale = nostro.forzanavale - 15;
+if(nostro.forzanavale < 0) nostro.forzanavale = 0;
+cout<<"Il nemico ha perso forza navale! La tua flotta ha subito lievi danni."<<endl;
+cout<<"Forza navale rimasta: "<<nostro.forzanavale<<endl;
+Sleep(1000);
+nostro.morale = nostro.morale + 15;
+if(nostro.morale > 100) nostro.morale = 100;
+cout<<"La morale del tuo popolo è aumentata a "<<nostro.morale<<endl;
+}
+}
+
+void AttaccoAereoNemico(Paese &nostro, Paese &nemico)
+{
+cout<<nemico.nome<<" sta lanciando un attacco aereo contro di te!"<<endl;
+Sleep(1500);
+cout<<"I bombardieri nemici stanno sorvolando il tuo territorio..."<<endl;
+Sleep(1500);
+
+nemico.soldi = nemico.soldi - 500;
+int random = rand() % 2;
+
+if(random == 0)
+{
+cout<<"L'attacco aereo nemico ha avuto successo!"<<endl;
+Sleep(1500);
+nostro.vita = nostro.vita - 25;
+if(nostro.vita < 0) nostro.vita = 0;
+cout<<"Il tuo paese ha subito gravi danni! Vita rimasta: "<<nostro.vita<<endl;
+if(nostro.strutture > 0)
+{
+nostro.strutture = nostro.strutture - 1;
+cout<<"Una delle tue strutture è stata distrutta! Strutture rimaste: LV"<<nostro.strutture<<endl;
+}
+nostro.morale = nostro.morale - 25;
+if(nostro.morale < 0) nostro.morale = 0;
+cout<<"La morale del tuo popolo è calata a "<<nostro.morale<<endl;
+}
+else
+{
+cout<<"I tuoi sistemi di difesa hanno intercettato l'attacco aereo nemico!"<<endl;
+Sleep(1500);
+nostro.vita = nostro.vita - 10;
+if(nostro.vita < 0) nostro.vita = 0;
+cout<<"Il tuo paese ha subito danni limitati! Vita rimasta: "<<nostro.vita<<endl;
+nostro.morale = nostro.morale + 10;
+if(nostro.morale > 100) nostro.morale = 100;
+cout<<"La morale del tuo popolo è aumentata a "<<nostro.morale<<" grazie alla difesa efficace!"<<endl;
+}
+}
+
+void MiglioraNemico(Paese &nostro, Paese &nemico)
+{
+int scelta = rand() % 3;
+switch(scelta)
+{
+case 0: // Miglioramento truppe terrestri
+if(nemico.soldi >= 400)
+{
+cout<<nemico.nome<<" sta migliorando le sue truppe terrestri..."<<endl;
+Sleep(1500);
+nemico.soldati = nemico.soldati + 15;
+nemico.vita = nemico.vita + 5;
+if(nemico.vita > 100) nemico.vita = 100;
+nemico.soldi = nemico.soldi - 400;
+cout<<nemico.nome<<" ha ora "<<nemico.soldati<<" soldati!"<<endl;
+cout<<"La vita di "<<nemico.nome<<" è aumentata a "<<nemico.vita<<endl;
+}
+break;
+case 1: // Miglioramento flotta navale
+if(nemico.soldi >= 600)
+{
+cout<<nemico.nome<<" sta migliorando la sua flotta navale..."<<endl;
+Sleep(1500);
+nemico.forzanavale = nemico.forzanavale + 50;
+nemico.soldi = nemico.soldi - 600;
+cout<<nemico.nome<<" ha ora una forza navale di "<<nemico.forzanavale<<"!"<<endl;
+}
+break;
+case 2: // Miglioramento strutture
+if(nemico.soldi >= 300)
+{
+cout<<nemico.nome<<" sta migliorando le sue strutture..."<<endl;
+Sleep(1500);
+nemico.strutture = nemico.strutture + 1;
+nemico.soldi = nemico.soldi - 300;
+cout<<nemico.nome<<" ha ora strutture di LV"<<nemico.strutture<<"!"<<endl;
+}
+break;
+}
+}
