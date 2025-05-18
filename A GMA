@@ -1,0 +1,554 @@
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <ctime>
+#include <windows.h>
+using namespace std;
+
+// Struttura per rappresentare un paese
+struct Paese {
+    string nome;
+    int territori;
+    int cittadini;
+    int soldati;
+    int oro;
+    int morale;
+    int cibo;
+};
+
+// Funzione per pulire lo schermo
+void pulisciSchermo() {
+    system("cls");
+}
+
+// Funzione per mettere in pausa
+void pausa() {
+    system("pause");
+}
+
+// Funzione per far dormire il programma
+void dormi(int millisecondi) {
+    Sleep(millisecondi);
+}
+
+// Funzione per stampare lo stato del paese
+void stampaStato(Paese paese) {
+    cout << "-----------------------------------\n";
+    cout << "Stato di " << paese.nome << ":\n";
+    cout << "-----------------------------------\n";
+    cout << "Territori: " << paese.territori << "\n";
+    cout << "Cittadini: " << paese.cittadini << "\n";
+    cout << "Soldati: " << paese.soldati << "\n";
+    cout << "Oro: " << paese.oro << "\n";
+    cout << "Morale: " << paese.morale << "\n";
+    cout << "Cibo: " << paese.cibo << "\n";
+    cout << "-----------------------------------\n\n";
+}
+
+// Funzione per aggiornare lo stato dopo un round
+void aggiornaStatoDopoRound(Paese &paese, bool isGiocatore) {
+    // Guadagno oro dai territori
+    paese.oro += paese.territori * 10;
+    
+    // Consumo di cibo - MODIFICATO
+    int ciboNecessario;
+    if (isGiocatore) {
+        // Per il giocatore: 1 cibo per 2 persone
+        ciboNecessario = (paese.cittadini + paese.soldati + 1) / 2; // +1 per arrotondare per eccesso
+    } else {
+        // Per il nemico: 1 cibo per 3 persone
+        ciboNecessario = (paese.cittadini + paese.soldati + 2) / 3; // +2 per arrotondare per eccesso
+    }
+    
+    if (paese.cibo >= ciboNecessario) {
+        paese.cibo -= ciboNecessario;
+    } else {
+        // Non c'è abbastanza cibo
+        paese.cittadini -= 20;
+        paese.morale -= 20;
+        if (isGiocatore) {
+            cout << "Non hai abbastanza cibo! Hai perso 20 cittadini e 20 morale.\n";
+        } else {
+            cout << "Il tuo nemico non ha abbastanza cibo! Ha perso 20 cittadini e 20 morale.\n";
+        }
+        dormi(2000);
+    }
+    
+    // Controlli sui minimi
+    if (paese.cittadini < 0) {
+        paese.cittadini = 0;
+    }
+    if (paese.morale < 0) {
+        paese.morale = 0;
+    }
+}
+
+// Funzione per l'attacco
+void attacco(Paese &giocatore, Paese &nemico, bool giocatoreAttacca) {
+    int forza_giocatore = giocatore.soldati;
+    int forza_nemico = nemico.soldati;
+    
+    // Genera numeri casuali per simulare la fortuna in battaglia
+    int fortuna_giocatore = rand() % 50;
+    int fortuna_nemico = rand() % 50;
+    
+    // Calcola la forza totale
+    forza_giocatore += fortuna_giocatore;
+    forza_nemico += fortuna_nemico;
+    
+    cout << "La battaglia infuria tra i due paesi...\n";
+    dormi(1000);
+    
+    if (giocatoreAttacca) {
+        cout << "I tuoi soldati avanzano verso il territorio nemico...\n";
+        dormi(1000);
+
+        if (forza_giocatore > forza_nemico) {
+            cout << "Vittoria! Hai conquistato un territorio nemico!\n";
+            giocatore.territori++;
+            nemico.territori--;
+            nemico.morale -= 20;
+            // Perdite in battaglia
+            giocatore.soldati -= rand() % 10 + 5;
+            nemico.soldati -= rand() % 20 + 10;
+        } else {
+            cout << "Sconfitta! Il nemico ha respinto il tuo attacco e contrattaccato!\n";
+            giocatore.territori--;
+            nemico.territori++;
+            giocatore.morale -= 20;
+            // Perdite maggiori per l'attaccante sconfitto
+            giocatore.soldati -= rand() % 20 + 10;
+            nemico.soldati -= rand() % 10 + 5;
+        }
+    } else {
+        cout << "Il nemico attacca i tuoi territori...\n";
+        dormi(1000);
+        
+        if (forza_nemico > forza_giocatore) {
+            cout << "Sconfitta! Il nemico ha conquistato uno dei tuoi territori!\n";
+            nemico.territori++;
+            giocatore.territori--;
+            giocatore.morale -= 20;
+            // Perdite in battaglia
+            nemico.soldati -= rand() % 10 + 5;
+            giocatore.soldati -= rand() % 20 + 10;
+        } else {
+            cout << "Vittoria! Hai respinto l'attacco nemico e contrattaccato!\n";
+            giocatore.territori++;
+            nemico.territori--;
+            nemico.morale -= 20;
+            // Perdite maggiori per l'attaccante sconfitto
+            nemico.soldati -= rand() % 20 + 10;
+            giocatore.soldati -= rand() % 10 + 5;
+        }
+    }
+    
+    // Controlli sui minimi
+    if (giocatore.soldati < 0) {
+        giocatore.soldati = 0;
+    }
+    if (nemico.soldati < 0) {
+        nemico.soldati = 0;
+    }
+
+    dormi(2000);
+}
+
+// Funzione per la difesa
+void difesa(Paese &giocatore) {
+    cout << "Hai ordinato alle tue truppe di fortificare le posizioni...\n";
+    dormi(1000);
+    cout << "I tuoi territori sono ben difesi per questo turno.\n";
+    dormi(1000);
+    // Bonus temporaneo di morale per la difesa
+    giocatore.morale += 5;
+    if (giocatore.morale > 100) {
+        giocatore.morale = 100;
+    }
+}
+
+// Funzione per il mercato nero
+void mercatoNero(Paese &giocatore) {
+    int scelta;
+    cout << "Benvenuto al Mercato Nero. Cosa vuoi fare?\n";
+    cout << "1. Compra Cibo (1 oro = 1 cibo)\n";
+    cout << "2. Compra Soldati (50 oro = 50 soldati, massimo una volta per turno)\n";
+    cout << "3. Fai Festa (+60 morale, costa 40 oro)\n";
+    cout << "Scelta: ";
+    cin >> scelta;
+    
+    switch (scelta) {
+        case 1: {
+            int quantita;
+            cout << "Quanto cibo vuoi comprare? (1 oro = 1 cibo): ";
+            cin >> quantita;
+            if (quantita <= 0) {
+                cout << "Quantità non valida.\n";
+                return;
+            }
+            if (giocatore.oro >= quantita) {
+                giocatore.oro -= quantita;
+                giocatore.cibo += quantita;
+                cout << "Hai comprato " << quantita << " unità di cibo.\n";
+            } else {
+                cout << "Non hai abbastanza oro!\n";
+            }
+            break;
+        }
+        case 2:
+            if (giocatore.oro >= 50) {
+                giocatore.oro -= 50;
+                giocatore.soldati += 50;
+                cout << "Hai reclutato 50 soldati.\n";
+            } else {
+                cout << "Non hai abbastanza oro!\n";
+            }
+            break;
+        case 3:
+            if (giocatore.oro >= 40) {
+                giocatore.oro -= 40;
+                giocatore.morale += 60;
+                if (giocatore.morale > 100) {
+                    giocatore.morale = 100;
+                }
+                cout << "Una grande festa è stata organizzata! Il morale è aumentato.\n";
+            } else {
+                cout << "Non hai abbastanza oro!\n";
+            }
+            break;
+        default:
+            cout << "Scelta non valida.\n";
+    }
+    dormi(2000);
+}
+
+// Funzione per controllare se il gioco è finito
+int controllaFineGioco(Paese giocatore, Paese nemico) {
+    if (giocatore.territori <= 0) {
+        return 1; // Giocatore ha perso tutti i territori
+    }
+    if (giocatore.cittadini <= 0) {
+        return 2; // Giocatore ha perso tutti i cittadini
+    }
+    if (giocatore.morale <= 0) {
+        return 3; // Giocatore ha perso tutto il morale
+    }
+    if (nemico.territori <= 0) {
+        return 4; // Nemico ha perso tutti i territori
+    }
+    if (nemico.cittadini <= 0) {
+        return 5; // Nemico ha perso tutti i cittadini
+    }
+    if (nemico.morale <= 0) {
+        return 6; // Nemico ha perso tutto il morale
+    }
+    return 0; // Il gioco continua
+}
+
+// Funzione per la mossa dell'IA nemica
+void mossaNemico(Paese &nemico, Paese &giocatore, bool &difesaAttiva) {
+    cout << "\nIl nemico sta pensando alla sua mossa...\n";
+    dormi(2000);
+    
+    // Logica decisionale dell'IA
+    int decision = 0;
+    
+    // Priorità 1: Se il nemico ha pochi soldati e abbastanza oro, compra soldati
+    if (nemico.soldati < 30 && nemico.oro >= 50) {
+        decision = 3; // Mercato Nero per comprare soldati
+    }
+    // Priorità 2: Se il nemico ha poco cibo e abbastanza oro, compra cibo
+    else if (nemico.cibo < ((nemico.cittadini + nemico.soldati + 2) / 3) && nemico.oro >= 50) {
+        decision = 2; // Mercato Nero per comprare cibo
+    }
+    // Priorità 3: Se il morale è basso e ha abbastanza oro, organizza una festa
+    else if (nemico.morale < 40 && nemico.oro >= 40) {
+        decision = 4; // Mercato Nero per fare festa
+    }
+    // Priorità 4: Se il nemico è significativamente più forte, attacca
+    else if (nemico.soldati > giocatore.soldati * 1.2 && nemico.soldati > 30) {
+        decision = 1; // Attacco
+    }
+    // Priorità 5: Se il nemico è più debole o uguale, si difende
+    else {
+        decision = 5; // Difesa
+    }
+    
+    // Esegue la decisione
+    switch (decision) {
+        case 1:
+            cout << "Il nemico ha deciso di attaccare!\n";
+            dormi(1000);
+            if (difesaAttiva) {
+                cout << "Le tue difese sono ben preparate e respingono l'attacco!\n";
+                // Il nemico perde più soldati a causa della tua difesa
+                nemico.soldati -= rand() % 15 + 10;
+                
+                if (nemico.soldati < 0) {
+                    nemico.soldati = 0;
+                }
+                dormi(2000);
+            } else {
+                attacco(giocatore, nemico, false);
+            }
+            break;
+        case 2:
+            cout << "Il nemico acquista cibo al mercato nero.\n";
+            // Il nemico compra abbastanza cibo per un turno
+            int ciboNecessario;
+            ciboNecessario = (nemico.cittadini + nemico.soldati + 2) / 3 - nemico.cibo;
+            if (ciboNecessario < 0) {
+                ciboNecessario = 50; // Compra comunque un po' di scorte
+            }
+            if (ciboNecessario > nemico.oro) {
+                ciboNecessario = nemico.oro; // Compra quanto può permettersi
+            }
+            nemico.oro -= ciboNecessario;
+            nemico.cibo += ciboNecessario;
+            dormi(2000);
+            break;
+        case 3:
+            cout << "Il nemico recluta nuovi soldati.\n";
+            nemico.oro -= 50;
+            nemico.soldati += 50;
+            dormi(2000);
+            break;
+        case 4:
+            cout << "Il nemico organizza una grande festa per aumentare il morale!\n";
+            nemico.oro -= 40;
+            nemico.morale += 60;
+            if (nemico.morale > 100) {
+                nemico.morale = 100;
+            }
+            dormi(2000);
+            break;
+        case 5:
+            cout << "Il nemico rafforza le sue difese.\n";
+            nemico.morale += 5;
+            if (nemico.morale > 100) {
+                nemico.morale = 100;
+            }
+            dormi(2000);
+            break;
+    }
+}
+
+// Funzione per l'introduzione narrativa
+void introduzioneNarrativa() {
+    pulisciSchermo();
+    cout << "=================================================================\n";
+    cout << " SIMULATORE GEOPOLITICO DI GUERRA \n";
+    cout << "=================================================================\n\n";
+    cout << "Anno 2050. Il mondo è cambiato drasticamente.\n";
+    dormi(2000);
+    cout << "Le risorse sono scarse, i confini ridisegnati...\n";
+    dormi(2000);
+    cout << "Tu sei il leader di una nazione in lotta per la sopravvivenza.\n";
+    dormi(2000);
+    cout << "Il tuo vicino ha tensioni con te da decenni.\n";
+    dormi(2000);
+    cout << "Oggi, la pace fragile si è spezzata. È scoppiata la guerra.\n";
+    dormi(2000);
+    cout << "Dovrai prendere decisioni difficili per la tua nazione.\n";
+    dormi(2000);
+    cout << "Ricorda: un leader deve essere forte, ma anche saggio.\n";
+    dormi(2000);
+    cout << "La storia ricorderà le tue scelte.\n\n";
+    dormi(3000);
+    cout << "Premi un tasto per iniziare il tuo comando...\n";
+    pausa();
+}
+
+// Funzione per il finale narrativo
+void finaleNarrativo(int risultato, string nomeGiocatore) {
+    pulisciSchermo();
+    cout << "=================================================================\n";
+    cout << " EPILOGO \n";
+    cout << "=================================================================\n\n";
+    
+    switch (risultato) {
+        case 1:
+            cout << "I tuoi territori sono caduti uno dopo l'altro.\n";
+            dormi(2000);
+            cout << "Le bandiere nemiche sventolano ora dove un tempo c'era la tua nazione.\n";
+            dormi(2000);
+            cout << "Sei fuggito con i pochi fedeli rimasti, verso un esilio amaro.\n";
+            dormi(2000);
+            cout << "Il tuo nome sarà ricordato come quello di un leader che ha perso tutto.\n";
+            break;
+        case 2:
+            cout << "I tuoi cittadini... sono tutti morti.\n";
+            dormi(2000);
+            cout << "Le città sono vuote, silenziose come cimiteri.\n";
+            dormi(2000);
+            cout << "Sei il re di un regno di fantasmi.\n";
+            dormi(2000);
+            cout << "La storia ti ricorderà come il leader che ha sacrificato il suo popolo.\n";
+            break;
+        case 3:
+            cout << "Il tuo popolo si è rivoltato contro di te.\n";
+            dormi(2000);
+            cout << "La rivoluzione è stata rapida e violenta.\n";
+            dormi(2000);
+            cout << "Sei stato deposto e il tuo destino è ora nelle mani di coloro che un tempo governavi.\n";
+            dormi(2000);
+            cout << "La tua statua è stata abbattuta nella piazza principale...\n";
+            break;
+        case 4:
+        case 5:
+        case 6:
+            cout << "Hai sconfitto il nemico!\n";
+            dormi(2000);
+            cout << "La tua strategia e leadership hanno portato " << nomeGiocatore << " alla vittoria.\n";
+            dormi(2000);
+            cout << "Il tuo nome sarà ricordato nei libri di storia come un grande condottiero.\n";
+            dormi(2000);
+            cout << "Tuttavia, la guerra ha lasciato cicatrici profonde che richiederanno generazioni per guarire.\n";
+            dormi(2000);
+            cout << "Ma per ora, c'è pace... e il futuro è nelle tue mani.\n";
+            break;
+        case 7:
+            cout << "Ti sei arreso. La tua nazione continuerà, ma sotto nuova guida.\n";
+            dormi(2000);
+            cout << "Forse hai salvato vite evitando ulteriori spargimenti di sangue.\n";
+            dormi(2000);
+            cout << "Ma la storia raramente è gentile con chi si arrende...\n";
+            break;
+        default:
+            cout << "Ti sei arreso. La tua nazione continuerà, ma sotto nuova guida.\n";
+            dormi(2000);
+            cout << "Forse hai salvato vite evitando ulteriori spargimenti di sangue.\n";
+            dormi(2000);
+            cout << "Ma la storia raramente è gentile con chi si arrende...\n";
+    }
+    
+    dormi(3000);
+    cout << "\n\nFINE GIOCO\n\n";
+    pausa();
+}
+
+// Funzione principale del gioco
+int main() {
+    // Inizializza il generatore di numeri casuali
+    srand(time(0));
+    
+    // Visualizza l'introduzione narrativa
+    introduzioneNarrativa();
+    
+    // Inizializza i due paesi
+    Paese giocatore;
+    Paese nemico;
+    
+    // Richiedi il nome del paese del giocatore
+    pulisciSchermo();
+    cout << "Come si chiama la tua nazione? ";
+    getline(cin >> ws, giocatore.nome);
+    
+    // Imposta il nome del nemico
+    nemico.nome = "Impero Nemico";
+    
+    // Inizializza i valori di partenza
+    giocatore.territori = 5;
+    giocatore.cittadini = 100;
+    giocatore.soldati = 50;
+    giocatore.oro = 200;
+    giocatore.morale = 100;
+    giocatore.cibo = 150;
+    
+    nemico.territori = 5;
+    nemico.cittadini = 100;
+    nemico.soldati = 50;
+    nemico.oro = 200;
+    nemico.morale = 100;
+    nemico.cibo = 150;
+    
+    int round = 1;
+    int scelta;
+    int risultatoGioco = 0;
+    bool difesaAttiva = false;
+    
+    // Loop principale del gioco
+    while (true) {
+        pulisciSchermo();
+        cout << "=================================================================\n";
+        cout << " ROUND " << round << " \n";
+        cout << "=================================================================\n\n";
+        
+        // Mostra lo stato dei paesi
+        stampaStato(giocatore);
+        stampaStato(nemico);
+        
+        // Reset della difesa attiva a ogni nuovo round
+        difesaAttiva = false;
+        
+        // Menu delle azioni
+        cout << "Cosa vuoi fare?\n";
+        cout << "1. Attacca\n";
+        cout << "2. Difendi\n";
+        cout << "3. Vai al Mercato Nero\n";
+        cout << "4. Arrrenditi\n";
+        cout << "Scelta: ";
+        cin >> scelta;
+        
+        // Esegui l'azione scelta dal giocatore
+        switch (scelta) {
+            case 1:
+                attacco(giocatore, nemico, true);
+                break;
+            case 2:
+                difesa(giocatore);
+                difesaAttiva = true;
+                break;
+            case 3:
+                mercatoNero(giocatore);
+                break;
+            case 4:
+                cout << "Sei sicuro di volerti arrendere? (1: Sì, 0: No): ";
+                cin >> scelta;
+                if (scelta == 1) {
+                    risultatoGioco = 7; // Resa
+                    finaleNarrativo(risultatoGioco, giocatore.nome); // Chiama direttamente il finale
+                    return 0; // Termina il gioco
+                }
+                continue; // Se l'utente non conferma, torna al menu principale
+            default:
+                cout << "Scelta non valida. Riprova.\n";
+                pausa();
+                continue; // Torna all'inizio del ciclo senza avanzare il round
+        }
+        
+        // Controlla se il gioco è finito
+        risultatoGioco = controllaFineGioco(giocatore, nemico);
+        if (risultatoGioco != 0) {
+            break;
+        }
+        
+        // Turno del nemico
+        mossaNemico(nemico, giocatore, difesaAttiva);
+        
+        // Controlla di nuovo se il gioco è finito dopo la mossa del nemico
+        risultatoGioco = controllaFineGioco(giocatore, nemico);
+        if (risultatoGioco != 0) {
+            break;
+        }
+        
+        // Aggiorna lo stato dopo il round
+        aggiornaStatoDopoRound(giocatore, true);  // true = è il giocatore
+        aggiornaStatoDopoRound(nemico, false);    // false = è il nemico
+        
+        // Controlla ancora una volta se il gioco è finito
+        risultatoGioco = controllaFineGioco(giocatore, nemico);
+        if (risultatoGioco != 0) {
+            break;
+        }
+        
+        // Incrementa il numero del round
+        round++;
+        cout << "\nFine del round " << round - 1 << ". Premi un tasto per continuare...\n";
+        pausa();
+    }
+    
+    // Mostra il finale narrativo
+    finaleNarrativo(risultatoGioco, giocatore.nome);
+    return 0;
+}
